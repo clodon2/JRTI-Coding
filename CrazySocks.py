@@ -4,12 +4,13 @@
 # Crazy Socks program
 
 # Crazy Socks
+
 import random as rdm
 
-Colors = ["Maroon", "Cobalt", "Sky Blue", "Teal", "Purple", "Black", "Titanium White", "Crimson", "Indigo", "Brown",
-          "Saffron", "Forest Green", "Lime", "Violet", "Hot Pink", "Tan", "Orange", "Gray", "Silver", "Magenta"]
-Themes = ["Model Rocket", "Car", "Train", "Dog", "Pen", "Star", "Guitar", "Surfboard", "Chair", "Soda", "Cat",
-          "Countertop", "Refrigerator", "Scissors", "Hat", "Pickle", "Wire", "Soccer Ball", "Tractor", "Tree"]
+Colors = ["maroon", "cobalt", "sky blue", "teal", "purple", "black", "white", "crimson", "indigo", "brown",
+          "saffron", "forest green", "lime", "violet", "hot pink", "tan", "orange", "gray", "silver", "magenta"]
+Themes = ["model rocket", "car", "train", "dog", "pen", "star", "guitar", "surfboard", "polka-dot", "soda can", "cat",
+          "vegetable", "dinosaur", "alphabet", "hat", "pickle", "book", "soccer ball", "tractor", "tree"]
 
 TargetColor = rdm.choice(Colors)
 TargetTheme = rdm.choice(Themes)
@@ -19,33 +20,41 @@ rdm.shuffle(Colors)
 rdm.shuffle(Themes)
 # Shuffles each list
 
+# Destructive read function
 
-def TargetFinder(trgt, list):
+
+def TargetFinder(trgt, ctlist):
+    # sets arguments, trgt is the one of the variables picked above, ctlist is one of the lists above
     working = True
     SearchCount = 0
-# sets a True variable and the beginning of the attempt counter
+    # sets a True variable and the beginning of the attempt counter
     while working:
         SearchCount += 1
-        RandomChoice = list.pop()
-# Counts each attempt and picks the last item of the shuffled list, setting it to RandomChoice
+        RandomChoice = ctlist.pop()
+        # Counts each attempt and picks the last item of the shuffled list, setting it to RandomChoice
         if RandomChoice == trgt:
             working = False
         else:
             continue
-# Checks if the random choice from the list is the target (continue is only there because if it's not its a pep8 error
-    RemainingInList = len(list)
+        # Checks if the random choice from the list is the target, if it isn't the loop repeats, if it is then the
+        # loop is ended (continue is only there because if it's not a pep8 error is there)
+    RemainingInList = len(ctlist)
     return SearchCount, RemainingInList
-# Counts the remaining items in the list and returns the amount of attempts and remaining items in the list
+    # Counts the remaining items in the list and returns the amount of attempts and remaining items in the list
 
 
-print(TargetColor, TargetTheme, "is the target")
+# Main Program
+
+print("Looking for", TargetColor, TargetTheme, "socks...")
 # Shows the user what the target is from each list
 
 TargetColorFound = TargetFinder(TargetColor, Colors)
 TargetThemeFound = TargetFinder(TargetTheme, Themes)
-# Uses the TargetFinder function to find the target in each list
+# Uses the TargetFinder (destructive read) function to find the target in each list
 
 NumberOfAttempts = TargetColorFound[0] + TargetThemeFound[0]
+# Combines the number of attempts taken to find each target in the TargetFinder (destructive read) function
 
-print("The target", TargetColor, TargetTheme, "was found after", NumberOfAttempts, "total attempts", ", leaving only",
+print("The", TargetColor, TargetTheme, "socks were found after", NumberOfAttempts, "total attempts, leaving only",
       TargetColorFound[1], "options left in the color list, and,", TargetThemeFound[1], "in the theme list")
+# Shows the user the outputs (attempts, socks, and options left)
