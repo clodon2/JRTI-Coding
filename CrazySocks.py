@@ -1,7 +1,7 @@
 # Corey Verkouteren
-# 9/7/21
+# 9/7/21 - 9/8/21
 # Mr Ball's Class
-# Crazy Socks program
+# Crazy Socks program, destructive reads
 
 # Crazy Socks
 
@@ -10,7 +10,7 @@ import random as rdm
 Colors = ["maroon", "cobalt", "sky blue", "teal", "purple", "black", "white", "crimson", "indigo", "brown",
           "saffron", "forest green", "lime", "violet", "hot pink", "tan", "orange", "gray", "silver", "magenta"]
 Themes = ["model rocket", "car", "train", "dog", "pen", "star", "guitar", "surfboard", "polka-dot", "soda can", "cat",
-          "vegetable", "dinosaur", "alphabet", "hat", "pickle", "book", "soccer ball", "tractor", "tree"]
+          "vegetable", "dinosaur", "alphabet", "shrimp", "pickle", "keyboard", "soccer ball", "tractor", "tree"]
 
 TargetColor = rdm.choice(Colors)
 TargetTheme = rdm.choice(Themes)
@@ -37,7 +37,7 @@ def TargetFinder(trgt, ctlist):
         else:
             continue
         # Checks if the random choice from the list is the target, if it isn't the loop repeats, if it is then the
-        # loop is ended (continue is only there because if it's not a pep8 error is there)
+        # loop is ended (continue is only there because if it's not a pep8 error appears)
     RemainingInList = len(ctlist)
     return SearchCount, RemainingInList
     # Counts the remaining items in the list and returns the amount of attempts and remaining items in the list
@@ -50,10 +50,11 @@ print("Looking for", TargetColor, TargetTheme, "socks...")
 
 TargetColorFound = TargetFinder(TargetColor, Colors)
 TargetThemeFound = TargetFinder(TargetTheme, Themes)
-# Uses the TargetFinder (destructive read) function to find the target in each list
+# Uses the TargetFinder (destructive read) function to find the target in each list, [0] will be attempts and [1]
+# will be the number of options left in the list
 
 NumberOfAttempts = TargetColorFound[0] + TargetThemeFound[0]
-# Combines the number of attempts taken to find each target in the TargetFinder (destructive read) function
+# Combines the number of attempts taken to find each target using the TargetFinder (destructive read) function
 
 print("The", TargetColor, TargetTheme, "socks were found after", NumberOfAttempts, "total attempts, leaving only",
       TargetColorFound[1], "options left in the color list, and,", TargetThemeFound[1], "in the theme list")
