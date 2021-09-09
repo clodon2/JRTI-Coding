@@ -7,22 +7,8 @@
 
 import random as rdm
 
-Colors = ["maroon", "cobalt", "sky blue", "teal", "purple", "black", "white", "crimson", "indigo", "brown",
-          "saffron", "forest green", "lime", "violet", "hot pink", "tan", "orange", "gray", "silver", "magenta"]
-Themes = ["model rocket", "car", "train", "dog", "pen", "star", "guitar", "surfboard", "polka-dot", "soda can", "cat",
-          "vegetable", "dinosaur", "alphabet", "shrimp", "pickle", "keyboard", "soccer ball", "tractor", "tree"]
-
-TargetColor = rdm.choice(Colors)
-TargetTheme = rdm.choice(Themes)
-# Picks the target item from each list
-
-rdm.shuffle(Colors)
-rdm.shuffle(Themes)
-# Shuffles each list
 
 # Destructive read function
-
-
 def TargetFinder(trgt, ctlist):
     # sets arguments, trgt is the one of the variables picked above, ctlist is one of the lists above
     working = True
@@ -44,6 +30,19 @@ def TargetFinder(trgt, ctlist):
 
 
 # Main Program
+
+Colors = ["maroon", "cobalt", "sky blue", "teal", "purple", "black", "white", "crimson", "indigo", "brown",
+          "saffron", "forest green", "lime", "violet", "hot pink", "tan", "orange", "gray", "silver", "magenta"]
+Themes = ["model rocket", "car", "train", "dog", "pen", "star", "guitar", "surfboard", "polka-dot", "soda can", "cat",
+          "vegetable", "dinosaur", "alphabet", "shrimp", "pickle", "keyboard", "soccer ball", "tractor", "tree"]
+
+TargetColor = rdm.choice(Colors)
+TargetTheme = rdm.choice(Themes)
+# Picks the target item from each list
+
+rdm.shuffle(Colors)
+rdm.shuffle(Themes)
+# Shuffles each list
 
 print("Looking for", TargetColor, TargetTheme, "socks...")
 # Shows the user what the target is from each list
