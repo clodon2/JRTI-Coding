@@ -67,6 +67,8 @@ import random as rdm
 
 
 def FriendAdder(friend):
+    friend = friend.lower()
+    friend = friend.title()
     if friend in Friends:
         print("Repeated name, please retry")
     else:
@@ -123,9 +125,12 @@ while asking:
             if KeyScore > HighestScore:
                 HighestScore = KeyScore
                 Champion = key
+            elif KeyScore == HighestScore:
+                ChampionsList = [key, Champion]
+                Champion = rdm.choice(ChampionsList)
             else:
                 continue
-        # finds the highest key value in the Scores dictionary
+        # finds the highest key value in the Scores dictionary, if there is a tie it picks a random winner from the tie
         print("Thank you for playing,", Champion, "has won the game")
         asking = False
     # quits the game and prints the winner
