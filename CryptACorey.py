@@ -74,15 +74,15 @@ def endecoder(message, cypher):
 using = True
 
 while using:
+    print("Please enter your password, or choose a new password (CASE SENSITIVE)")
+    Password = input()
+
     Basestring = "zZ94aA1bBc0CeEg6GnNiIjJkK5mMoOqfFQd7DrR3sSlLtTpPuUv2VwW xX8yYhH"
     finalpassword = duprem(Password)
     cypher = buildCypherString(finalpassword, Basestring)
 
     asking = True
     deciding = True
-
-    print("Please enter your password, or choose a new password (CASE SENSITIVE)")
-    Password = input()
 
     print("Enter your message:")
     msg = input()
