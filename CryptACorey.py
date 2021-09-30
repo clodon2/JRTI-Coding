@@ -1,5 +1,5 @@
 # Corey Verkouteren
-# 9/27/21 - 9/29/21
+# 9/27/21 - 9/30/21
 # Mr Ball's PM
 # Encrypting and Decrypting
 
@@ -36,28 +36,27 @@ def EnDeCryptdictMaker(cypherstr, basestr, ende):
     Cryptdic = {}
     edlcount = len(basestr)
 
-    if ende == "En":
+    if ende == "De":
         for i in range(edlcount - 1):
             Cryptdic[basestr[i]] = cypherstr[i]
 
-    elif ende == "De":
+    elif ende == "En":
         for i in range(edlcount - 1):
             Cryptdic[cypherstr[i]] = basestr[i]
 
     return Cryptdic
 # Creates a dictionary where the individual characters of the base string (basestr) and combination string (cypherstr)
-# (created in the buildCypherString function) are the keys and values, either the base string or cypher string are used
-# as keys, and which ever isn't used for the keys  is used for the values of those keys depending on if you are
-# encrypting or decrypting
+# (created in the buildCypherString function) are the keys and values, the orders of these for decrypting and
+# encrypting are important because it can cause decrypting errors if the orders are switched.
 
 
 def endecoder(message, cypher):
     result = ""
 
     for l in message:
-        chara = cypher.get(l, "")
+        chara = cypher.get(l, "nothing")
 
-        if chara == "":
+        if chara == "nothing":
             result += l
 
         else:
@@ -66,7 +65,8 @@ def endecoder(message, cypher):
     return result
 # uses the dictionary created with the EnDeCryptdictMaker function to decrypt or encrypt a message the user puts in.
 # It does this by relating each character in the message to its key in the dictionary, grabbing the value of that key
-# from the dictionary and adding it to the final encrypted or decrypted message
+# from the dictionary and adding it to the final encrypted or decrypted message (if it isn't there the character is just
+# added)
 
 
 # Main Program
@@ -79,17 +79,18 @@ while using:
 
     Basestring = "zZ94aA1bBc0CeEg6GnNiIjJkK5mMoOqfFQd7DrR3sSlLtTpPuUv2VwW xX8yYhH"
     finalpassword = duprem(Password)
+    # deletes duplicates from the entered password
     cypher = buildCypherString(finalpassword, Basestring)
+    # creates the cypher, reference comment on buildCypherString
 
     asking = True
     deciding = True
 
     print("Enter your message:")
     msg = input()
-    # all info used later, some inputed by user like the message and their password, base string includes all upper and
-    # lower cases of the alphabet along with numbers 1-9, 0, and space. This is done so that if the password is abcedfg
-    # more than just those letters are encrypted in the message. Of course, that means technically it is possible to
-    # discover the base string order still (allowing decryption without the program), but it makes it harder.
+    # all info used later, some input by user like the message and their password, base string includes all upper and
+    # lower cases of the alphabet along with numbers 1-9, 0, and space. This is done so that if the password is weak,
+    # the encryption appears to be much more complicated
 
     while asking:
         print("Would you like to encrypt or decrypt?(e or d)")
