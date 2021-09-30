@@ -20,12 +20,11 @@ def duprem(string):
 def buildCypherString(password, decrypters):
     cpypassword = password
 
-    for i in range(0, len(decrypters)):
-        chrctr = decrypters[i]
-        chkr = cpypassword.count(chrctr)
+    for l in decrypters:
+        chkr = cpypassword.count(l)
 
         if chkr == 0:
-            cpypassword += chrctr
+            cpypassword += l
 
     return cpypassword
 # creates a "copy" of the/a original password and adds all characters present in a/the base string that are not present
@@ -34,14 +33,13 @@ def buildCypherString(password, decrypters):
 
 def EnDeCryptdictMaker(cypherstr, basestr, ende):
     Cryptdic = {}
-    edlcount = len(basestr)
 
     if ende == "De":
-        for i in range(edlcount - 1):
+        for i in range(len(basestr)):
             Cryptdic[basestr[i]] = cypherstr[i]
 
     elif ende == "En":
-        for i in range(edlcount - 1):
+        for i in range(len(basestr)):
             Cryptdic[cypherstr[i]] = basestr[i]
 
     return Cryptdic
