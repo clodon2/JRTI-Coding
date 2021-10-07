@@ -1,7 +1,7 @@
 # Corey Verkouteren
 # 10/7/21 -
 # Mr Ball's PM
-# Using the GUI we made to de/en-crypt a file
+# Using the message en/de-cryption GUI we made to de/en-crypt a file
 
 # Password-based file Encrypter/Decrypter inside pySimpleGUI
 
@@ -41,7 +41,7 @@ def EnDeCryptdictMaker(cypherstr, basestr, ende):
             Cryptdic[basestr[i]] = cypherstr[i]
 
     elif ende == "En":
-        for i in range(len(basestr)):
+        for i in range(len(basestr) - 1):
             Cryptdic[cypherstr[i]] = basestr[i]
 
     return Cryptdic
@@ -63,6 +63,8 @@ def endecoder(message, cypherdict):
             result += chara
 
     return result
+
+
 # uses the dictionary created with the EnDeCryptdictMaker function to decrypt or encrypt a message the user puts in.
 # It does this by relating each character in the message to its key in the dictionary, grabbing the value of that key
 # from the dictionary and adding it to the final encrypted or decrypted message (if it isn't there the character is just
@@ -73,13 +75,15 @@ def endecoder(message, cypherdict):
 
 sg.theme('DarkPurple4')
 
-layout = [[sg.Frame("Password-Based Decryptor/Encryptor", [
+layout = [[sg.Frame("Password-Based File Decryptor/Encryptor", [
           [sg.Frame("Password", layout=[
               [sg.Input("", k="-pass")]],
                     vertical_alignment='center', element_justification="center", background_color="#53004c",
                     relief="flat", pad=10, title_location="n")],
           [sg.Frame("File", layout=[
-              [sg.Input("", enable_events=True, k="-file", tooltip="")]],
+              [sg.FileBrowse("Browse Files", enable_events=True, k="-file", file_types=(("Text Files", ".txt"),)),
+               sg.Input(readonly=True, disabled_readonly_background_color="#5a3d5c", k="-inf")],
+              [sg.Button("Submit", enable_events=True, k="-submitfile")]],
                     vertical_alignment='center', element_justification="center", background_color="#53004c",
                     relief="flat", title_location="n", pad=5)],
           [sg.Frame("Encrypt or Decrypt", layout=[
@@ -87,16 +91,8 @@ layout = [[sg.Frame("Password-Based Decryptor/Encryptor", [
                [sg.Button(button_text="Decrypt", k="-dbutton", enable_events=True)]],
                     vertical_alignment='center', element_justification="center", background_color="#53004c",
                     relief="flat", pad=5)],
-          [sg.Frame("Output", layout=[
-               [sg.Input("Encrypted message here", readonly=True, k="-eout",
-                         disabled_readonly_background_color="#5a3d5c", tooltip="Encrypted message here"),
-                sg.Button("Clear", enable_events=True, k="-eclear")],
-               [sg.Input("Decrypted message here", readonly=True, k="-dout",
-                         disabled_readonly_background_color="#5a3d5c", tooltip="Decrypted message here"),
-                sg.Button("Clear", enable_events=True, k="-dclear")]],
-                    vertical_alignment='center', element_justification="center", background_color="#53004c",
-                    relief="flat", title_location="n", pad=10)],
-          [sg.Button(button_text="Reset All", enable_events=True, pad=10, k="-reset")]],
+          [sg.Text("File Status:"),
+           sg.Text("Unchanged", k="-status")]],
                     relief="ridge", background_color='#2f0030', title_location="n", pad=5,
                     element_justification="center", title_color="#ff52f2")]]
 
@@ -114,22 +110,23 @@ while showing:
     if event == sg.WINDOW_CLOSED:
         break
 
-    if event == "-file":
-        currentmsg = window["-file"].get()
-        window["-file"].set_tooltip(currentmsg)
-    # updates the message tooltip to be accurate with what is in the field
-
     if event == "-ebutton":
         Password = window["-pass"].get()
-        msg = window["-file"].get()
 
         finalpassword = duprem(Password)
         cypher = buildCypherString(finalpassword, Basestring)
-
+        efile = values["-inf"]
         mode = "En"
-        Encrypt = EnDeCryptdictMaker(cypher, Basestring, mode)
-        window["-eout"].update(endecoder(msg, Encrypt))
-        window["-eout"].set_tooltip(endecoder(msg, Encrypt))
+        cypherdict = EnDeCryptdictMaker(cypher, Basestring, mode)
+
+        with open(efile, "r") as document:
+            documentcont = document.readlines()
+        with open("edocument.txt", "w") as writer:
+            for line in documentcont:
+                Encrypt = endecoder(line, cypherdict)
+                writer.write(Encrypt)
+
+        window["-status"].update("Encrypted")
     # If the "Encrypt" button is clicked, it gets the values from the "Password" and "Message" fields and runs the
     # encryption on the message, printing the result in the encryption input box and tooltip (under "Output")
 
@@ -143,23 +140,12 @@ while showing:
         mode = "De"
         Decrypt = EnDeCryptdictMaker(cypher, Basestring, mode)
         window["-dout"].update(endecoder(msg, Decrypt))
-        window["-dout"].set_tooltip(endecoder(msg, Decrypt))
+        window["-status"].update("Decrypted")
     # If the "Decrypt" button is clicked, it gets the values from the "Password" and "Message" fields and runs the
     # decryption on the message, printing the result in the decryption input box and tooltip (under "Output")
-
-    if event == "-eclear":
-        window["-eout"].update("Encrypted message here")
-
-    elif event == "-dclear":
-        window["-dout"].update("Decrypted message here")
-    # Both if/elifs replace the Encryption or Decryption output fields with their starting text
 
     if event == "-reset":
         window["-pass"].update("")
         window["-file"].update("")
-        window["-eout"].update("Encrypted message here")
-        window["-dout"].update("Decrypted message here")
-        window["-eout"].set_tooltip("Encrypted message here")
-        window["-dout"].set_tooltip("Decrypted message here")
         window["-file"].set_tooltip("")
     # Sets all input elements (and tooltips) to their original values, probably an easier way to do this with a for loop
