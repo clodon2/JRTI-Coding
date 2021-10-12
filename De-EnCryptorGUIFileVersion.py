@@ -5,6 +5,8 @@
 
 # Password-based file Encrypter/Decrypter inside pySimpleGUI
 
+# Note: all comments are made underneath of the code instead of above, changing with next new program probably
+
 import PySimpleGUI as sg
 
 
@@ -50,11 +52,11 @@ def EnDeCryptdictMaker(cypherstr, basestr, ende):
 # encrypting are important because it can cause decrypting errors if the orders are switched.
 
 
-def endecoder(message, cypherdict):
+def endecoder(message, cyphdict):
     result = ""
 
     for l in message:
-        chara = cypherdict.get(l, "nothing")
+        chara = cyphdict.get(l, "nothing")
 
         if chara == "nothing":
             result += l
@@ -69,6 +71,20 @@ def endecoder(message, cypherdict):
 # It does this by relating each character in the message to its key in the dictionary, grabbing the value of that key
 # from the dictionary and adding it to the final encrypted or decrypted message (if it isn't there the character is just
 # added)
+
+
+def filewriter(contents, cyphdict):
+    encryptedmessage = ""
+    with open("OutputLetterCorey.txt", "w") as writer:
+        for line in contents:
+            EnDecrypt = endecoder(line, cyphdict)
+            writer.write(EnDecrypt)
+            encryptedmessage += EnDecrypt
+    window["-out"].update(encryptedmessage)
+
+
+# writes to a/the file separate from the user's letter (that is meant to be encrypted or decrypted) with the encrypted or
+# decrypted version of the user's letter, also updates the output on the window
 
 
 # Main Program
@@ -91,6 +107,11 @@ layout = [[sg.Frame("Password-Based File Decryptor/Encryptor", [
                [sg.Button(button_text="Decrypt", k="-dbutton", enable_events=True)]],
                     vertical_alignment='center', element_justification="center", background_color="#53004c",
                     relief="flat", pad=5)],
+          [sg.Frame("Output", layout=[
+               [sg.Multiline("Message/Letter here", disabled=True, k="-out", tooltip="En/De-crypted message here"),
+                sg.Button("Clear", enable_events=True, k="-oclear")]],
+                    vertical_alignment='center', element_justification="center", background_color="#53004c",
+                    relief="flat", pad=5, title_location="n")],
           [sg.Text("File Status:"),
            sg.Text("Unchanged", k="-status")]],
                     relief="ridge", background_color='#2f0030', title_location="n", pad=5,
@@ -110,6 +131,14 @@ while showing:
     if event == sg.WINDOW_CLOSED:
         break
 
+    if event == "-submitfile":
+        efile = values["-file"]
+        with open(efile, "r") as document:
+            documentcont = document.read()
+
+    if event == "-oclear":
+        window["-out"].update("")
+
     if event == "-ebutton":
         Password = window["-pass"].get()
 
@@ -119,12 +148,11 @@ while showing:
         mode = "En"
         cypherdict = EnDeCryptdictMaker(cypher, Basestring, mode)
 
-        with open(efile, "r") as document:
-            documentcont = document.readlines()
-        with open("edocument.txt", "w") as writer:
-            for line in documentcont:
-                Encrypt = endecoder(line, cypherdict)
-                writer.write(Encrypt)
+        efile = values["-file"]
+        try:
+            filewriter(documentcont, cypherdict)
+        except NameError:
+            sg.popup_ok_cancel("There is no file submitted")
 
         window["-status"].update("Encrypted")
     # If the "Encrypt" button is clicked, it gets the values from the "Password" and "Message" fields and runs the
