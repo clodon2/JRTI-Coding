@@ -73,14 +73,13 @@ def endecoder(message, cyphdict):
 # added)
 
 
-def filewriter(contents, cyphdict):
-    encryptedmessage = ""
-    with open("OutputLetterCorey.txt", "w") as writer:
+def filewriter(contents, cyphdict, outfile):
+    endecryptedmessage = ""
+    with open(outfile, "w") as output:
         for line in contents:
             EnDecrypt = endecoder(line, cyphdict)
-            writer.write(EnDecrypt)
-            encryptedmessage += EnDecrypt
-    window["-out"].update(encryptedmessage)
+            output.write(EnDecrypt)
+            endecryptedmessage += EnDecrypt
 
 
 # writes to a/the file separate from the user's letter (that is meant to be encrypted or decrypted) with the encrypted or
@@ -96,10 +95,12 @@ layout = [[sg.Frame("Password-Based File Decryptor/Encryptor", [
               [sg.Input("", k="-pass")]],
                     vertical_alignment='center', element_justification="center", background_color="#53004c",
                     relief="flat", pad=10, title_location="n")],
-          [sg.Frame("File", layout=[
+          [sg.Frame("Input", layout=[
               [sg.FileBrowse("Browse Files", enable_events=True, k="-file", file_types=(("Text Files", ".txt"),)),
-               sg.Input(readonly=True, disabled_readonly_background_color="#5a3d5c", k="-inf")],
-              [sg.Button("Submit", enable_events=True, k="-submitfile")]],
+               sg.Input(readonly=True, disabled_readonly_background_color="#5a3d5c", tooltip="", k="-inf")],
+              [sg.Text("Output", background_color="#53004c")],
+              [sg.FileBrowse("Browse Files", enable_events=True, k="-ofile", file_types=(("Text Files", ".txt"),)),
+                sg.Input(readonly=True, disabled_readonly_background_color="#5a3d5c", tooltip="", k="-ouf")]],
                     vertical_alignment='center', element_justification="center", background_color="#53004c",
                     relief="flat", title_location="n", pad=5)],
           [sg.Frame("Encrypt or Decrypt", layout=[
@@ -107,11 +108,6 @@ layout = [[sg.Frame("Password-Based File Decryptor/Encryptor", [
                [sg.Button(button_text="Decrypt", k="-dbutton", enable_events=True)]],
                     vertical_alignment='center', element_justification="center", background_color="#53004c",
                     relief="flat", pad=5)],
-          [sg.Frame("Output", layout=[
-               [sg.Multiline("Message/Letter here", disabled=True, k="-out", tooltip="En/De-crypted message here"),
-                sg.Button("Clear", enable_events=True, k="-oclear")]],
-                    vertical_alignment='center', element_justification="center", background_color="#53004c",
-                    relief="flat", pad=5, title_location="n")],
           [sg.Text("File Status:"),
            sg.Text("Unchanged", k="-status")]],
                     relief="ridge", background_color='#2f0030', title_location="n", pad=5,
@@ -123,7 +119,7 @@ window = sg.Window("", layout, resizable=True, finalize=True, use_default_focus=
 showing = True
 
 Basestring = "zZ94aA1bBc0CeEg6GnNiIjJkK5mMoOqfFQd7DrR3sSlLtTpPuUv2VwW xX8yYhH"
-# base used for encryption/decryption
+# base used for encryption/decryption, includes a-z lower and upper, 1-9 + 0, and space
 
 while showing:
     event, values = window.read()
@@ -131,49 +127,56 @@ while showing:
     if event == sg.WINDOW_CLOSED:
         break
 
-    if event == "-submitfile":
-        efile = values["-file"]
-        with open(efile, "r") as document:
-            documentcont = document.read()
-
-    if event == "-oclear":
-        window["-out"].update("")
-
     if event == "-ebutton":
         Password = window["-pass"].get()
 
         finalpassword = duprem(Password)
         cypher = buildCypherString(finalpassword, Basestring)
-        efile = values["-inf"]
         mode = "En"
         cypherdict = EnDeCryptdictMaker(cypher, Basestring, mode)
 
         efile = values["-file"]
-        try:
-            filewriter(documentcont, cypherdict)
-        except NameError:
-            sg.popup_ok_cancel("There is no file submitted")
+        ofile = values["-ofile"]
 
-        window["-status"].update("Encrypted")
-    # If the "Encrypt" button is clicked, it gets the values from the "Password" and "Message" fields and runs the
-    # encryption on the message, printing the result in the encryption input box and tooltip (under "Output")
+        try:
+            with open(efile, "r") as document:
+                documentcont = document.read()
+                filewriter(documentcont, cypherdict, ofile)
+                window["-status"].update("Encrypted")
+
+        except NameError:
+            sg.popup_ok_cancel("File Does Not Exist")
+
+        except FileNotFoundError:
+            sg.popup_ok_cancel("One or Both Files Was Not Submitted")
+
+    # If the "Encrypt" button is clicked, it gets the values from the "Password", "Output", and "Input fields and runs
+    # the encryption on the contents of the file, writing the encrypted version into another file and showing it in
+    # the output multiline
 
     elif event == "-dbutton":
         Password = window["-pass"].get()
-        msg = window["-file"].get()
 
         finalpassword = duprem(Password)
         cypher = buildCypherString(finalpassword, Basestring)
-
         mode = "De"
-        Decrypt = EnDeCryptdictMaker(cypher, Basestring, mode)
-        window["-dout"].update(endecoder(msg, Decrypt))
-        window["-status"].update("Decrypted")
-    # If the "Decrypt" button is clicked, it gets the values from the "Password" and "Message" fields and runs the
-    # decryption on the message, printing the result in the decryption input box and tooltip (under "Output")
+        cypherdict = EnDeCryptdictMaker(cypher, Basestring, mode)
 
-    if event == "-reset":
-        window["-pass"].update("")
-        window["-file"].update("")
-        window["-file"].set_tooltip("")
-    # Sets all input elements (and tooltips) to their original values, probably an easier way to do this with a for loop
+        efile = values["-file"]
+        ofile = values["-ofile"]
+
+        try:
+            with open(efile, "r") as document:
+                documentcont = document.read()
+                filewriter(documentcont, cypherdict, ofile)
+                window["-status"].update("Decrypted")
+
+        except NameError:
+            sg.popup_ok_cancel("File does not exist")
+
+        except FileNotFoundError:
+            sg.popup_ok_cancel("One or Both Files Was Not Submitted")
+
+    # If the "Decrypt" button is clicked, it gets the values from the "Password" and "file" fields and runs the
+    # decryption on the contents of the file, writing the encrypted version into another file and showing it
+    # in the output multiline
