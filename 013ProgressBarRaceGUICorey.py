@@ -1,5 +1,5 @@
 # Corey Verkouteren
-# 10//21 -
+# 10/16/21 - 10/21/21
 # Mr Ball's PM
 # progress bar practice
 
@@ -9,6 +9,7 @@ import PySimpleGUI as sg
 import random as rd
 
 
+# gets a random value and adds it to the current value of the progressbar
 def progressbarchoices(total):
     rchoice = rd.choice(Choices)
     total += rchoice
@@ -17,6 +18,7 @@ def progressbarchoices(total):
     return rchoice, total
 
 
+# sets all updated values to their original state
 def gamereset():
     plyrtotal = 0
     cputotal = 0
@@ -63,14 +65,19 @@ while showing:
         break
 
     if event == "rpick":
+        # finds the value input by the user for what the max score is and updates the progressbars to reflect that, 
+        # updates each click of the roll button is disabled after the first click
         try:
             racemax = int(window["racelength"].get())
             window["plyrp"].update(current_count=plyrtotal, max=racemax)
             window["cpup"].update(current_count=cputotal, max=racemax)
             window["racelength"].update(disabled=True)
 
+            # clears the results field as the first print of the scores will
+            # include "results" at the start if not
             window["results"].update("")
 
+            # uses the progressbarchoices function to get a random value to use as the roll for each
             plyrbar = progressbarchoices(plyrtotal)
             cpubar = progressbarchoices(cputotal)
             plyrtotal = plyrbar[1]
@@ -82,6 +89,7 @@ while showing:
             window["plyrp"].update(plyrbar[1])
             window["cpup"].update(cpubar[1])
 
+        # prevents crash if the race max input isn't an integer
         except:
             window["racelength"].update(40)
             sg.popup("Race length invalid")
