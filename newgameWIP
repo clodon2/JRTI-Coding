@@ -1,0 +1,30 @@
+import PySimpleGUI as sg
+
+
+tab2 = [[sg.Checkbox("Hide Instructions", enable_events=True, k="t1instr")],
+        [sg.Column(layout=[[
+            sg.Frame("Instructions", [
+                [sg.Multiline("",
+                       disabled=True, k="actualin")]
+            ], k="t1in")]])],
+        [sg.Text("Current HighScore:", justification="right", s=49),
+         sg.Input("0", enable_events=True, s=4, justification="right", readonly=True, k="hscore")],
+        [sg.ProgressBar(orientation="horizontal", max_value=40, s=(40, 20), k="scorebar")],
+        [sg.Multiline("results", s=60, enable_events=True, k="t1result")],
+        [sg.Button("Click Here", enable_events=True, k="click")]]
+
+window = sg.Window("", tab2, finalize=True, use_default_focus=True)
+
+showing = True
+
+while showing:
+    event, values = window.read()
+
+    if event == sg.WINDOW_CLOSED:
+        break
+
+    if window["t1instr"].get() == "True":
+        window["t1in"].unhide_row()
+
+    elif not window["t1instr"] == "False":
+        window["t1in"].hide_row()
