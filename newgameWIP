@@ -11,7 +11,7 @@ def decisioneval(answer, situation, barvalues):
     progressbarchoice = [0, 1]
     progressbars = ["t2hbar", "t2rbar"]
 
-    if answer == "y"
+    if answer == "y":
         if situation == 0:
             rpick = rd.choice(roomchoice)
             nsituation = rpick
@@ -80,7 +80,13 @@ while showing:
         window["t2i"].unhide_row()
 
     if event == "t2y":
-        decisioneval("y", rsituation, progressbarval)
+        turn = decisioneval("y", rsituation, progressbarval)
+        rsituation = turn[0]
+        progressbarval = turn[1]
+        
+        
 
     elif event == "t2n":
         decisioneval("n", rsituation, progressbarval)
+        rsituation = turn[0]
+        progressbarval = turn[1]
