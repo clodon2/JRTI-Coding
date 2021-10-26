@@ -1,21 +1,71 @@
 import PySimpleGUI as sg
+import random as rd
 
 
-tab2 = [[sg.Checkbox("Hide Instructions", enable_events=True, k="t1instr")],
-        [sg.Column(layout=[[
-            sg.Frame("Instructions", [
-                [sg.Multiline("",
-                       disabled=True, k="actualin")]
-            ], k="t1in")]])],
-        [sg.Text("Current HighScore:", justification="right", s=49),
-         sg.Input("0", enable_events=True, s=4, justification="right", readonly=True, k="hscore")],
-        [sg.ProgressBar(orientation="horizontal", max_value=40, s=(40, 20), k="scorebar")],
-        [sg.Multiline("results", s=60, enable_events=True, k="t1result")],
-        [sg.Button("Click Here", enable_events=True, k="click")]]
+def decisioneval(answer, situation, barvalues):
+    roomchoice = [1, 2, 3]
+    rooms = {1: "You found a chest, would you like to open it?", 2: ("A", monster, "stands before you, attack?"), 3:
+                   "Empty Room, leave?"}
+    roomloot = {1: ["g", "n", "g", "g3", "g", "g", "g2", "g2", "g2"]}
+    lootvalue = {"g": 1, "g2": 2, "g3": 4, "b1": -1, "b2": -2, "b3": -4, "n": 0}
+    progressbarchoice = [0, 1]
+    progressbars = ["t2hbar", "t2rbar"]
 
-window = sg.Window("", tab2, finalize=True, use_default_focus=True)
+    if answer == "y"
+        if situation == 0:
+            rpick = rd.choice(roomchoice)
+            nsituation = rpick
+            window["t2text"].update(rooms[rpick])
+
+        elif situation == 1:
+            lootqual = rd.choice(roomloot[1])
+            bareffect = lootvalue[lootqual]
+            barchoice = rd.choice(progressbarchoice)
+            barvalues[barchoice] += bareffect
+            window[progressbars[barchoice]].update(current_count=barvalues[barchoice])
+    else:
+        rpick = rd.choice(roomchoice)
+        nsituation = rpick
+        window["t2text"].update(rooms[rpick])
+
+
+
+    return nsituation, barvalues
+
+
+tab2game = [
+    [sg.Text("Highscore:", justification="right"),
+     sg.Input("0", readonly=True, disabled_readonly_background_color="white", justification="right", s=3)],
+    [sg.Text("Health", s=20), sg.Text("Resources")],
+    [sg.ProgressBar(max_value=15, s=(15, 15), bar_color=("red", "red3"), k="t2hbar"),
+     sg.ProgressBar(max_value=15, s=(15, 15), bar_color=("green3", "green"), k="t2rbar")],
+    [sg.Multiline("Enter the dungeon", enable_events=True, disabled=True, s=46, k="t2text")],
+    [sg.Button("Yes", enable_events=True, k="t2y"),
+     sg.Button("No", enable_events=True, k="t2n")]
+]
+
+tab2 = [
+    [sg.Frame("Dungeon Survival", tab2game)],
+    [sg.Checkbox("Hide", enable_events=True, k="t2ihide")],
+    [sg.Frame("Instructions", [[sg.Multiline("Dungeon Survival is a randomly generated text-based rpg. The goal"
+                                             " is to survive for as many turns as possible. After every decision "
+                                             "you make you will get the results and then continue to the next room. "
+                                             "You lose 1 resource every other turn and have a max of 15 resources "
+                                             "and 15 health. You lose when your resource or health bar reaches 0.",
+                                             disabled=True)]],
+              k="t2i")]
+]
+
+window = sg.Window("tab2 test", tab2, finalize=True)
+
+monster = ["Skeleton", "Goblin", "Witch"]
+rsituation = 0
+progressbarval = [0, 0]
 
 showing = True
+
+window["t2hbar"].update(current_count=15)
+window["t2rbar"].update(current_count=15)
 
 while showing:
     event, values = window.read()
@@ -23,8 +73,14 @@ while showing:
     if event == sg.WINDOW_CLOSED:
         break
 
-    if window["t1instr"].get() == "True":
-        window["t1in"].unhide_row()
+    if values["t2ihide"]:
+        window["t2i"].hide_row()
 
-    elif not window["t1instr"] == "False":
-        window["t1in"].hide_row()
+    elif not values["t2ihide"]:
+        window["t2i"].unhide_row()
+
+    if event == "t2y":
+        decisioneval("y", rsituation, progressbarval)
+
+    elif event == "t2n":
+        decisioneval("n", rsituation, progressbarval)
