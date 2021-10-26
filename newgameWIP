@@ -83,8 +83,6 @@ while showing:
         turn = decisioneval("y", rsituation, progressbarval)
         rsituation = turn[0]
         progressbarval = turn[1]
-        
-        
 
     elif event == "t2n":
         decisioneval("n", rsituation, progressbarval)
