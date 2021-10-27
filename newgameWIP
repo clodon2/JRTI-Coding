@@ -3,13 +3,20 @@ import random as rd
 
 
 def decisioneval(answer, situation, barvalues):
-    roomchoice = [1, 2, 3]
+    roomchoice = [1, 2, 2, 2, 2]
+    monster = ["Skeleton", "Goblin", "Witch"]
     rooms = {1: "You found a chest, would you like to open it?", 2: ("A", monster, "stands before you, attack?"), 3:
-                   "Empty Room, leave?"}
-    roomloot = {1: ["g", "n", "g", "g3", "g", "g", "g2", "g2", "g2"]}
+                   "Seems empty... leave?"}
+    roomloot = {1: ["g", "g", "g3", "g", "g", "g2", "g2", "g2"], 2: ["n", "b1", "b3", "b1", "b2", "b1", "b1"]}
+    roomlootalt = {2: ["n", "n", "n", "b2", "b2", "b2", "b3", "b3"]}
     lootvalue = {"g": 1, "g2": 2, "g3": 4, "b1": -1, "b2": -2, "b3": -4, "n": 0}
     progressbarchoice = [0, 1]
     progressbars = ["t2hbar", "t2rbar"]
+
+    if situation == "d":
+        window["t2n"].update(disabled=True)
+    else:
+        window["t2n"].update(disabled=False)
 
     if answer == "y":
         if situation == 0:
@@ -22,20 +29,77 @@ def decisioneval(answer, situation, barvalues):
             bareffect = lootvalue[lootqual]
             barchoice = rd.choice(progressbarchoice)
             barvalues[barchoice] += bareffect
+            if barvalues[barchoice] >= 15:
+                barvalues[barchoice] = 15
             window[progressbars[barchoice]].update(current_count=barvalues[barchoice])
-    else:
-        rpick = rd.choice(roomchoice)
-        nsituation = rpick
-        window["t2text"].update(rooms[rpick])
+            rpick = rd.choice(roomchoice)
+            nsituation = rpick
+            window["t2text"].update(rooms[rpick])
 
+        elif situation == 2:
+            lootqual = rd.choice(roomloot[2])
+            bareffect = lootvalue[lootqual]
+            barchoice = rd.choice(progressbarchoice)
+            barvalues[barchoice] += bareffect
+            if barvalues[barchoice] >= 15:
+                barvalues[barchoice] = 15
+                rpick = rd.choice(roomchoice)
+                nsituation = rpick
+                window["t2text"].update(rooms[rpick])
+            elif barvalues[barchoice] <= 0:
+                window[progressbars[barchoice]].update(current_count=barvalues[barchoice])
+                window["t2text"].update("You have died, restart game?")
+                nsituation = "d"
+                window["t2n"].update(disabled=True)
+            else:
+                window[progressbars[barchoice]].update(current_count=barvalues[barchoice])
+                rpick = rd.choice(roomchoice)
+                nsituation = rpick
+                window["t2text"].update(rooms[rpick])
 
+        elif situation == "d":
+            window[progressbars[0]].update(current_count=15)
+            window[progressbars[1]].update(current_count=15)
+            barvalues = [15, 15]
+            nsituation = 0
+            window["t2text"].update("Enter the dungeon?")
+
+    elif answer == "n":
+        if situation == 0:
+            nsituation = 0
+
+        elif situation == 1:
+            rpick = rd.choice(roomchoice)
+            nsituation = rpick
+            window["t2text"].update(rooms[rpick])
+
+        elif situation == 2:
+            lootqual = rd.choice(roomlootalt[2])
+            bareffect = lootvalue[lootqual]
+            barchoice = rd.choice(progressbarchoice)
+            barvalues[barchoice] += bareffect
+            if barvalues[barchoice] >= 15:
+                barvalues[barchoice] = 15
+                rpick = rd.choice(roomchoice)
+                nsituation = rpick
+                window["t2text"].update(rooms[rpick])
+            elif barvalues[barchoice] <= 0:
+                window[progressbars[barchoice]].update(current_count=barvalues[barchoice])
+                window["t2text"].update("You have died, restart game?")
+                nsituation = "d"
+                window["t2n"].update(disabled=True)
+            else:
+                window[progressbars[barchoice]].update(current_count=barvalues[barchoice])
+                rpick = rd.choice(roomchoice)
+                nsituation = rpick
+                window["t2text"].update(rooms[rpick])
 
     return nsituation, barvalues
 
 
 tab2game = [
     [sg.Text("Highscore:", justification="right"),
-     sg.Input("0", readonly=True, disabled_readonly_background_color="white", justification="right", s=3)],
+     sg.Input("0", readonly=True, disabled_readonly_background_color="white", justification="right", s=3, k="t2hs")],
     [sg.Text("Health", s=20), sg.Text("Resources")],
     [sg.ProgressBar(max_value=15, s=(15, 15), bar_color=("red", "red3"), k="t2hbar"),
      sg.ProgressBar(max_value=15, s=(15, 15), bar_color=("green3", "green"), k="t2rbar")],
@@ -50,7 +114,7 @@ tab2 = [
     [sg.Frame("Instructions", [[sg.Multiline("Dungeon Survival is a randomly generated text-based rpg. The goal"
                                              " is to survive for as many turns as possible. After every decision "
                                              "you make you will get the results and then continue to the next room. "
-                                             "You lose 1 resource every other turn and have a max of 15 resources "
+                                             "You have a max of 15 resources "
                                              "and 15 health. You lose when your resource or health bar reaches 0.",
                                              disabled=True)]],
               k="t2i")]
@@ -58,9 +122,10 @@ tab2 = [
 
 window = sg.Window("tab2 test", tab2, finalize=True)
 
-monster = ["Skeleton", "Goblin", "Witch"]
 rsituation = 0
-progressbarval = [0, 0]
+progressbarval = [15, 15]
+turncount = 0
+t2highscore = 0
 
 showing = True
 
@@ -82,9 +147,21 @@ while showing:
     if event == "t2y":
         turn = decisioneval("y", rsituation, progressbarval)
         rsituation = turn[0]
+        if turncount >= t2highscore:
+            t2highscore = turncount
+        if rsituation == "d":
+            turncount = 0
+        turncount += 1
         progressbarval = turn[1]
+        window["t2hs"].update(t2highscore)
 
     elif event == "t2n":
-        decisioneval("n", rsituation, progressbarval)
+        turn = decisioneval("n", rsituation, progressbarval)
         rsituation = turn[0]
+        if turncount >= t2highscore:
+            t2highscore = turncount
+        if rsituation == "d":
+            turncount = 0
+        turncount += 1
         progressbarval = turn[1]
+        window["t2hs"].update(t2highscore)
