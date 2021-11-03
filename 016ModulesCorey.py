@@ -1,7 +1,9 @@
 # Corey Verkouteren
-# 11/2
+# 11/2/21 - 1/3/21
 # Mr Ball's PM
-# Modules (make functions basically)
+# Modules
+
+import random as random
 
 
 def addupname(Name):
@@ -11,33 +13,36 @@ def addupname(Name):
     AUNresult = 0
 
     try:
+        Name = Name.lower()
+        Name = Name.replace(" ", "")
         for l in Name:
             AUNresult += AUNalphabet[l]
 
     except TypeError:
-        AUNresult = "Name contained non-letters"
+        AUNresult = "invalid name"
 
     except KeyError:
-        AUNresult = "Name contained non-letter"
+        AUNresult = "invalid name"
 
     except:
-        AUNresult = "Unknown error"
+        AUNresult = "unknown error"
 
     if Name == "":
-        AUNresult = "no name was input"
+        AUNresult = "invalid name"
 
     return AUNresult
 
 
 def setAlpha(visLevel):
-    import random as random
-
     if visLevel == "nt":
         SAresult = 1
+
     elif visLevel == "st":
         SAresult = random.uniform(0.5, 0.9)
+
     elif visLevel == "vt":
         SAresult = random.uniform(0.2, 0.4)
+
     else:
         SAresult = "visibility level invalid"
 
@@ -45,11 +50,9 @@ def setAlpha(visLevel):
 
 
 def setColor(theme):
-    import random as random
-
     SCSPchoices = ["snow", "black", "gray50", "tan"]
-    SCSOTchoices = ["medium slate blue", "light sea green", "burlywood3", "red2", "midnight blue"]
-    SCWACchoices = ["violet red", "chartreuse3", "goldenrod", "tomato", "HotPink1", "sienna3"]
+    SCSOTchoices = ["medium slate blue", "forest green", "burlywood3", "red2", "midnight blue"]
+    SCWACchoices = ["violet red", "chartreuse3", "goldenrod", "tomato", "HotPink1", "sienna3", "light sea green"]
 
     if theme == "Subdued/Professional":
         SCresult = random.choice(SCSPchoices)
@@ -64,4 +67,3 @@ def setColor(theme):
         SCresult = "invalid theme option"
 
     return SCresult
-
