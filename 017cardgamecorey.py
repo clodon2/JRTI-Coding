@@ -105,32 +105,41 @@ while playing:
     if turn == 1:
         currentplayer = "player1"
         print(f"Enter anything to draw, player{turn}")
-        input()
-        winner = game("player1", player1)
-        if winner:
-            turn = 0
+        response = input()
+        if response.lower() == "exit":
+            playing = False
+        else:
+            winner = game("player3", player3)
+            if winner:
+                turn = 0
 
     elif turn == 2:
         currentplayer = "player2"
         print(f"Enter anything to draw, player{turn}")
-        input()
-        winner = game("player2", player2)
-        if winner:
-            turn = 0
+        response = input()
+        if response.lower() == "exit":
+            playing = False
+        else:
+            winner = game("player3", player3)
+            if winner:
+                turn = 0
 
     elif turn == 3:
         currentplayer = "player3"
         print(f"Enter anything to draw, player{turn}")
-        input()
-        winner = game("player3", player3)
-        if winner:
-            turn = 0
+        response = input()
+        if response.lower() == "exit":
+            playing = False
+        else:
+            winner = game("player3", player3)
+            if winner:
+                turn = 0
 
     elif turn == 0:
         print("Welcome to Draw Duplicates!")
         print("The goal of this game is to draw a duplicate card 5 times. Your first draw will be the 'target' card, "
               "the one you will have to draw 5 times.")
-        print("Each turn you draw one card, first to 5 matches (duplicates drawn) wins.")
+        print("Each turn you draw one card, first to 5 matches (duplicates drawn) wins. Enter 'exit' to end the game.")
         print()
 
     turn += 1
