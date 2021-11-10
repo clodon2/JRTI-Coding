@@ -41,9 +41,7 @@ class players:
 
 
 def game(player, classplayer):
-    # introduction instructions plus drawing the players
-    print(f"Enter anything to draw, {player}")
-    input()
+    # draws card
     drawncard = classplayer.draw()
 
     # checks for matches after you draw your target players
@@ -106,18 +104,24 @@ while playing:
 
     if turn == 1:
         currentplayer = "player1"
+        print(f"Enter anything to draw, player{turn}")
+        input()
         winner = game("player1", player1)
         if winner:
             turn = 0
 
     elif turn == 2:
         currentplayer = "player2"
+        print(f"Enter anything to draw, player{turn}")
+        input()
         winner = game("player2", player2)
         if winner:
             turn = 0
 
     elif turn == 3:
         currentplayer = "player3"
+        print(f"Enter anything to draw, player{turn}")
+        input()
         winner = game("player3", player3)
         if winner:
             turn = 0
