@@ -1,5 +1,5 @@
 # Corey Verkouteren
-# 11/9/21 - 11/10/21
+# 11/9/21 - 11/15/21
 # Mr. Ball's PM
 # Object Oriented Programming (OOP)
 
@@ -16,6 +16,7 @@ class players:
         self.drawcount = 0
 
     def draw(self):
+        # picks a random card from self.cards and returns it, if it's the first draw that card is set as the target card
         draw = rd.choice(self.cards)
         if self.drawcount == 0:
             self.target = draw
@@ -27,21 +28,24 @@ class players:
             self.matches += 1
 
     def wincheck(self):
-        if self.matches == 2:
+        # returns a true boolean if the player gets to 5 matches
+        if self.matches == 5:
             win = True
         else:
             win = False
         return win
 
     def resetgame(self):
-        self.target = ""
+        # sets all variables to their original values, target is changed by draw attribute since drawcount is set to 0
         self.matches = 0
         self.drawcount = 0
 
 
 
 def game(player, classplayer):
-    # draws card
+    # introduction instructions plus drawing the players
+    print(f"Enter anything to draw, {player}")
+    input()
     drawncard = classplayer.draw()
 
     # checks for matches after you draw your target players
@@ -94,52 +98,40 @@ playing = True
 player1 = players()
 player2 = players()
 player3 = players()
-currentplayer = ""
 
 turn = 0
 
+# runs each player's turn by counting up and resetting the count to 1 if it's above 3 (num of players)
 while playing:
     if turn > 3:
         turn = 1
 
+    # player 1's turn
     if turn == 1:
-        currentplayer = "player1"
-        print(f"Enter anything to draw, player{turn}")
-        response = input()
-        if response.lower() == "exit":
-            playing = False
-        else:
-            winner = game("player3", player3)
-            if winner:
-                turn = 0
+        winner = game("player1", player1)
+        # checks if the win value was returned as true
+        if winner:
+            turn = 0
 
+    # player 2's turn
     elif turn == 2:
-        currentplayer = "player2"
-        print(f"Enter anything to draw, player{turn}")
-        response = input()
-        if response.lower() == "exit":
-            playing = False
-        else:
-            winner = game("player3", player3)
-            if winner:
-                turn = 0
+        winner = game("player2", player2)
+        if winner:
+            turn = 0
 
+    # player 3's turn
     elif turn == 3:
-        currentplayer = "player3"
-        print(f"Enter anything to draw, player{turn}")
-        response = input()
-        if response.lower() == "exit":
-            playing = False
-        else:
-            winner = game("player3", player3)
-            if winner:
-                turn = 0
+        winner = game("player3", player3)
+        if winner:
+            turn = 0
 
+    # instructions/about
+    # elif statement so that the message isn't repeated unless turn is set to 0 outside of the player turns
     elif turn == 0:
         print("Welcome to Draw Duplicates!")
         print("The goal of this game is to draw a duplicate card 5 times. Your first draw will be the 'target' card, "
               "the one you will have to draw 5 times.")
-        print("Each turn you draw one card, first to 5 matches (duplicates drawn) wins. Enter 'exit' to end the game.")
+        print("Each turn you draw one card, first to 5 matches (duplicates drawn) wins.")
         print()
 
     turn += 1
