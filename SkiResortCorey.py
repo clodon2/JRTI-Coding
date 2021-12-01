@@ -52,7 +52,7 @@ def createwindow2():
                           justification="center")]]
 
     window2 = sg.Window("Powder Ski Resort Guest Sign-In", layout2, finalize=True, use_default_focus=False)
-    window2.make_modal()
+    window2.keep_on_top_set()
 
     showing2 = True
 
@@ -79,17 +79,23 @@ def createwindow2():
                 else:
                     guestlist.append(user)
                     user = guest(window2["-guestname"].get(), window2["-guestskill"].get(), window2["-guestlesson"].get(),
-                              window2["-guestrent"].get(), window2["-gueststay"].get())
+                                 window2["-guestrent"].get(), window2["-gueststay"].get())
                     guesttableinfo.append(user.getInformation())
 
 
-def createwindow3():
-    layout3 = [[sg.Frame("Guest Index", font=("Roboto", 15), layout=
-                         [[sg.Table(values=guesttableinfo,
-                                    headings=["Guest Name", "Skill Level", "Days Staying", "Renting Equipment", "Wants Lessons"],
-                                    visible_column_map=[True, True, True, True, True], def_col_width=25,
-                                    justification="left")]],
-                         title_location="n")]]
+def createwindow3(tableinfo):
+    if not tableinfo:
+        tableinfo = [["No Guests Booked", "-", "-", "-", "-"]]
+    layout3 = [[sg.Frame("Guest Index", font=("Roboto", 15),
+                         layout=[[sg.Table(values=tableinfo,
+                                           headings=["Guest Name", "Skill Level", "Days Staying", "Renting Equipment",
+                                                     "Wants Lessons"],
+                                           visible_column_map=[True, True, True, True, True], def_col_width=25, max_col_width=50,
+                                           justification="left", selected_row_colors=("White", "skyblue3")),
+                                  sg.Button("Want Lessons"),
+                                  sg.Button("Want Equipment"),
+                                  sg.Combo(["Beginner", "Intermediate", "Advanced"])]],
+                                  title_location="n")]]
 
     window3 = sg.Window("Powder Ski Resort Guest Information", layout3, finalize=True, use_default_focus=False)
     window3.keep_on_top_set()
@@ -127,5 +133,4 @@ while showing:
         createwindow2()
 
     if event == "-staffbutton":
-        print(guesttableinfo)
-        createwindow3()
+        createwindow3(guesttableinfo)
