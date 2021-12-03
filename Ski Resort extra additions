@@ -25,25 +25,26 @@ class guest:
         guesttable.append(user.createInformationlist())
 
 
-sg.theme("lightblue3")
-
-
 def tableRowSelection(tabledata, button, skillinfo):
     rownumber = -1
     selectionNumbers = []
+    # prevents a selection of the row that shows no guests are booked
+    if tabledata[0][1] == "-":
+        pass
     # returns rows to select by counting through the lists in the guesttableinfo list and returning what the count was
     # on if the variable was found (True/False or selected skill level)
-    for i in tabledata:
-        rownumber += 1
-        if button == "lessons":
-            if i[4]:
-                selectionNumbers.append(rownumber)
-        if button == "equipment":
-            if i[3]:
-                selectionNumbers.append(rownumber)
-        if button == "skilllevel":
-            if i[1] == skillinfo:
-                selectionNumbers.append(rownumber)
+    else:
+        for i in tabledata:
+            rownumber += 1
+            if button == "lessons":
+                if i[4]:
+                    selectionNumbers.append(rownumber)
+            if button == "equipment":
+                if i[3]:
+                    selectionNumbers.append(rownumber)
+            if button == "skilllevel":
+                if i[1] == skillinfo:
+                    selectionNumbers.append(rownumber)
     return selectionNumbers
 
 
@@ -79,17 +80,17 @@ def createwindow2():
 
             # Prevents fields from being empty or having out of place values like stay time = banana
             if window2["-guestname"].get() == "" or window2["-guestskill"].get() == "":
-                sg.popup_ok_cancel("Please fill in all fields")
+                sg.popup_ok_cancel("Please fill in all fields", background_color="Red")
 
             elif not window2["-gueststay"].get().isdigit():
-                sg.popup_ok_cancel("Please only use integers when selecting your stay time")
+                sg.popup_ok_cancel("Please only use integers when selecting your stay time", background_color="Red")
 
             else:
                 user = window2["-guestname"].get()
 
                 # prevents repeat guests
                 if user in guestlist:
-                    sg.popup_ok_cancel("Guest already booked")
+                    sg.popup_ok_cancel("Guest already booked", background_color="Red")
 
                 # adds the guest as an object and updates the info for the table in the staff window
                 else:
@@ -97,7 +98,7 @@ def createwindow2():
                     user = guest(window2["-guestname"].get(), window2["-guestskill"].get(), window2["-guestlesson"].get(),
                                  window2["-guestrent"].get(), window2["-gueststay"].get())
                     user.addGuestInformation(guesttableinfo, user)
-                    sg.popup_ok_cancel("Guest successfully booked")
+                    sg.popup_ok_cancel("Guest successfully booked", background_color="lime")
 
 
 def createwindow3(tableinfo):
@@ -110,16 +111,18 @@ def createwindow3(tableinfo):
                                            headings=["Guest Name", "Skill Level", "Days Staying", "Renting Equipment",
                                                      "Wants Lessons"], k="-guesttable",
                                            visible_column_map=[True, True, True, True, True], def_col_width=25, max_col_width=50,
-                                           justification="left", selected_row_colors=("White", "skyblue3"))],
-                                  [sg.Column([[
+                                           justification="left", selected_row_colors=("White", "skyblue3")),
+                                  sg.Column([[
                                    sg.Text("Total Guests:"),
-                                   sg.Input("0", k="-guesttotal", disabled=True, s=3),
-                                   sg.Button("Want Lessons", k="-wantlessons"),
-                                   sg.Button("Want Equipment", k="-wantequipment"),
-                                   sg.Combo(["Beginner", "Intermediate", "Advanced"], readonly=True, k="-skilllevel",
-                                            enable_events=True),
-                                   sg.Button("Reset Selection", k="-selectionreset")]],
-                                   justification="center")]],
+                                   sg.Input("0", k="-guesttotal", disabled=True, s=3)],
+                                   [sg.Text("Selected Guests:"),
+                                    sg.Input("0", k="-selectedguests", s=3)],
+                                   [sg.Button("Want Lessons", k="-wantlessons")],
+                                   [sg.Button("Want Equipment", k="-wantequipment")],
+                                   [sg.Combo(["Beginner", "Intermediate", "Advanced"], readonly=True, k="-skilllevel",
+                                            enable_events=True)],
+                                   [sg.Button("Reset Selection", k="-selectionreset")]],
+                                   justification="center", element_justification="center")]],
                                             title_location="n")]]
 
 
@@ -134,6 +137,7 @@ def createwindow3(tableinfo):
             pass
         else:
             window3["-guesttotal"].update(len(tableinfo))
+
         event3, values3 = window3.read()
 
         if event3 == sg.WINDOW_CLOSED:
@@ -141,26 +145,32 @@ def createwindow3(tableinfo):
 
         if event3 == "-wantlessons":
             window3["-guesttable"].update(select_rows=tableRowSelection(tableinfo, "lessons", "none"))
+            window3["-selectedguests"].update(len(tableRowSelection(tableinfo, "lessons", "none")))
 
         if event3 == "-wantequipment":
             window3["-guesttable"].update(select_rows=tableRowSelection(tableinfo, "equipment", "none"))
+            window3["-selectedguests"].update(len(tableRowSelection(tableinfo, "equipment", "none")))
 
         if event3 == "-skilllevel":
             window3["-guesttable"].update(select_rows=tableRowSelection(tableinfo, "skilllevel", window3["-skilllevel"].get()))
+            window3["-selectedguests"].update(len(tableRowSelection(tableinfo, "skilllevel", window3["-skilllevel"].get())))
 
         if event3 == "-selectionreset":
             window3["-skilllevel"].update("")
             window3["-guesttable"].update(select_rows=[])
+            window3["-selectedguests"].update("0")
 
 
-layout0 = [[sg.Text("Welcome to Powder Ski Resort!", s=29, font=("Roboto", 20), justification="center",)],
+sg.theme("lightblue3")
+
+layout1 = [[sg.Text("Welcome to Powder Ski Resort!", s=29, font=("Roboto", 20), justification="center",)],
            [sg.Image("skier1Corey.png")],
            [sg.Column([[sg.Button("I am a guest", enable_events=True, k="-guestbutton"),
                         sg.Button("I am a staff member", enable_events=True, k="-staffbutton")]],
                       justification="center")]]
 
 
-window = sg.Window("Powder Ski Resort", layout0, finalize=True, use_default_focus=False)
+window1 = sg.Window("Powder Ski Resort", layout1, finalize=True, use_default_focus=False)
 
 # lists used later in table info and checking guest info
 guestlist = []
@@ -169,7 +179,7 @@ guesttableinfo = []
 showing = True
 
 while showing:
-    event, values = window.read()
+    event, values = window1.read()
 
     if event == sg.WINDOW_CLOSED:
         break
