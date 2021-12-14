@@ -3,11 +3,31 @@
 # Mr Ball's PM
 # PyGame Introduction
 
-# title
-# possible sound: https://freesound.org/people/NoiseCollector/packs/647/?page=3
+# Virus Avoider
 
 import pygame as pg
+import random as rd
 from pygame.locals import *
+
+
+class Virus(pg.sprite.Sprite):
+    movecount = 0
+
+    def __init__(self):
+        super(Virus, self).__init__()
+        virusimage = pg.transform.scale(pg.image.load("images/ViruswindowimageCorey.png"), (150, 41))
+        self.surf = virusimage
+        self.rect = self.surf.get_rect(
+            center=(
+                    (rd.randint(50, SCREEN_WIDTH - 41)),
+                    (rd.randint(5, 10)),
+                    ))
+        self.speed = rd.randint(2, 10)
+
+    def update(self):
+        self.rect.move_ip(0, 5)
+        if self.rect.top >= SCREEN_HEIGHT - 39:
+            self.kill()
 
 
 class Player(pg.sprite.Sprite):
@@ -24,17 +44,13 @@ class Player(pg.sprite.Sprite):
 
     def __init__(self, spriteimage):
         super(Player, self).__init__()
-        self.sprite = spriteimage
-        self.surf = pg.transform.scale(pg.image.load(spriteimage), [60, 76])
+        self.finalsprite = pg.transform.scale(pg.image.load(spriteimage), [50, 64])
+        self.surf = self.finalsprite
         self.rect = self.surf.get_rect(
             center=(
                     (SCREEN_WIDTH / 2),
-                    (SCREEN_HEIGHT - 60),
-            )
-        )
-
-    def getImage(self):
-        return self.sprite
+                    (SCREEN_HEIGHT - 89),
+                    ))
 
     def update(self, keypress):
         if keypress[K_LEFT]:
@@ -53,20 +69,31 @@ class Player(pg.sprite.Sprite):
 
 
 pg.init()
+
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 800
-black = (0, 0, 0)
-white = (255, 255, 255)
 
 font = pg.font.SysFont("Arial", 40)
 clock = pg.time.Clock()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pg.display.set_caption("Guitar: Welcome ")
+pg.display.set_caption("Virus Avoider")
+
 player = Player("images/grab icon.png")
 # <a href="https://www.vecteezy.com/free-vector/mouse-icon">Mouse Icon Vectors by Vecteezy</a>
+background = pg.image.load("images/Background Image.jpg")
+# https://www.pexels.com/photo/scenic-view-of-snow-capped-mountains-during-night-3408744/
+taskbar = pg.image.load("images/taskbar image.png")
+# just a screenshot of my taskbar
 
 all_sprites = pg.sprite.Group()
+virus_sprites = pg.sprite.Group()
 all_sprites.add(player)
+
+ADDVIRUS = pg.USEREVENT + 1
+pg.time.set_timer(ADDVIRUS, 3000)
+
+screen.blit(background, (0, 0))
+screen.blit(taskbar, (0, 761))
 
 running = True
 
@@ -89,14 +116,21 @@ while running:
             elif event.type == QUIT:
                 running = False
 
-        pressed_keys = pg.key.get_pressed()
-        player.update(pressed_keys)
+        if event.type == ADDVIRUS:
+            newvirus = Virus()
+            all_sprites.add(newvirus)
+            virus_sprites.add(newvirus)
 
-        screen.fill(white)
+    pressed_keys = pg.key.get_pressed()
+    player.update(pressed_keys)
+    virus_sprites.update()
 
-        for entity in all_sprites:
-            screen.blit(entity.surf, entity.rect)
+    screen.blit(background, (0, 0))
+    screen.blit(taskbar, (0, 761))
 
-        pg.display.flip()
-        # Ensure program maintains a maximum rate of 30 frames per second
-        clock.tick(30)
+    for entity in all_sprites:
+        screen.blit(entity.surf, entity.rect)
+
+    pg.display.flip()
+    # Ensure program maintains a maximum rate of 30 frames per second
+    clock.tick(30)
