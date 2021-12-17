@@ -1,5 +1,5 @@
 # Corey Verkouteren
-# 12/9/21 - 12/15/21
+# 12/9/21 - 12/16/21
 # Mr Ball's PM
 # PyGame Introduction
 
@@ -14,11 +14,12 @@ from pygame.locals import *
 class Virus(pg.sprite.Sprite):
     def __init__(self):
         super(Virus, self).__init__()
+        # Virus image I made myself
         virusimage = pg.transform.scale(pg.image.load("images/ViruswindowimageCorey.png"), (170, 47))
         self.surf = virusimage
         self.rect = self.surf.get_rect(
             center=(
-                    (rd.randint(80, SCREEN_WIDTH - 80)),
+                    (rd.randint(60, SCREEN_WIDTH - 80)),
                     (rd.randint(5, 10)),
                     ))
         self.speed = rd.randint(2, 10)
@@ -72,6 +73,20 @@ class Player(pg.sprite.Sprite):
             self.rect.bottom = SCREEN_HEIGHT
 
 
+class MenuButton(pg.sprite.Sprite):
+    def __init__(self, button, location):
+        super(MenuButton, self).__init__()
+        self.surf = pg.image.load(button)
+        self.rect = self.surf.get_rect(
+            center=(
+                    (SCREEN_WIDTH/2),
+                    (SCREEN_HEIGHT - location),
+                    ))
+
+    def clicked(self):
+        return False
+
+
 # initialize
 pg.init()
 pg.font.init()
@@ -85,6 +100,12 @@ clock = pg.time.Clock()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pg.display.set_caption("Virus Avoider")
 
+# Menu Stuff
+menubackground = pg.image.load("Menu/mountainriver.png")
+# Photo by Roberto Nickson from Pexels
+startbutton = MenuButton("Menu/startbutton.png", 400)
+
+# Game Stuff
 player = Player("images/grab icon.png")
 # <a href="https://www.vecteezy.com/free-vector/mouse-icon">Mouse Icon Vectors by Vecteezy</a>
 background = pg.image.load("images/Background Image.jpg")
@@ -93,6 +114,8 @@ taskbar = pg.image.load("images/taskbar image.png")
 # just a screenshot of my taskbar
 
 # sprite groups
+menu_sprites = pg.sprite.Group()
+menu_sprites.add(startbutton)
 all_sprites = pg.sprite.Group()
 virus_sprites = pg.sprite.Group()
 all_sprites.add(player)
@@ -102,8 +125,27 @@ ADDVIRUS = pg.USEREVENT + 1
 pg.time.set_timer(ADDVIRUS, 2000)
 
 running = True
+inmenu = True
 
 while running:
+    while inmenu:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                inmenu = False
+                running = False
+            if event.type == MOUSEBUTTONDOWN:
+                if pg.mouse.get_pressed(num_buttons=3)[0]:
+                    if pg.Rect.collidepoint(startbutton.rect, pg.mouse.get_pos()):
+                        inmenu = False
+        screen.blit(menubackground, (0, 0))
+        for entity in menu_sprites:
+            screen.blit(entity.surf, entity.rect)
+
+        pg.display.flip()
+        # FPS
+        clock.tick(30)
+
+
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
@@ -149,6 +191,5 @@ while running:
     screen.blit(lifecounter, (0, 0))
 
     pg.display.flip()
-    # Ensure program maintains a maximum rate of 30 frames per second
+    # FPS
     clock.tick(30)
-
