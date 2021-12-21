@@ -150,6 +150,7 @@ background = pg.image.load("images/Background Image.jpg")
 # https://www.pexels.com/photo/scenic-view-of-snow-capped-mountains-during-night-3408744/
 taskbar = pg.image.load("images/taskbar image.png")
 # just a screenshot of my taskbar
+weaponcooldown = 0
 
 # Game Over stuff
 retrybutton = GameOverButton("Images/retry.png", 400)
@@ -184,6 +185,7 @@ while running:
                 running = False
 
             if event.type == MOUSEBUTTONDOWN:
+                # if the player left clicks the start button, the player leaves the menu
                 if pg.mouse.get_pressed(num_buttons=3)[0]:
                     if pg.Rect.collidepoint(startbutton.rect, pg.mouse.get_pos()):
                         inmenu = False
@@ -204,6 +206,7 @@ while running:
                 running = False
 
             if event.type == MOUSEBUTTONDOWN:
+                # detects if the user left clicks the "retry" button and resets the game if so
                 if pg.mouse.get_pressed(num_buttons=3)[0]:
                     if pg.Rect.collidepoint(retrybutton.rect, pg.mouse.get_pos()):
                         player.lives = 4
@@ -236,9 +239,14 @@ while running:
             if event.key == K_LEFT or event.key == K_RIGHT:
                 player.setMoving(False)
             if event.key == K_UP:
-                projectile = Weapon()
-                weapon_sprites.add(projectile)
-                all_sprites.add(projectile)
+                # prevents spam firing, only allows a shot every couple seconds
+                if weaponcooldown + 2600 <= pg.time.get_ticks():
+                    weaponcooldown = pg.time.get_ticks()
+                    projectile = Weapon()
+                    weapon_sprites.add(projectile)
+                    all_sprites.add(projectile)
+                else:
+                    pass
             # if user closes the window, the program turns off
             elif event.type == QUIT:
                 running = False
@@ -259,11 +267,11 @@ while running:
     for entity in virus_sprites:
         virusrects.append(entity.rect)
 
+    # detects weapon-virus collisions, and kills both if they collide
     for entity in weapon_sprites:
         if pg.Rect.collidelistall(entity.rect, virusrects):
             hit = pg.Rect.collidelistall(entity.rect, virusrects)
             entity.kill()
-
     try:
         for i in hit:
             virus_sprites.sprites()[i].kill()
@@ -271,9 +279,11 @@ while running:
     except:
         pass
 
+    # sends to gameover screen if the player runs out of lives
     if player.lives <= 0:
         gameover = True
 
+    # all updates
     pressed_keys = pg.key.get_pressed()
     player.update(pressed_keys)
     virus_sprites.update()
