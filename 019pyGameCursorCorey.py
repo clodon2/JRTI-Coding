@@ -171,7 +171,7 @@ gameover_sprites.add(retrybutton)
 
 # makes an event to add a virus. runs that event every 2 seconds
 ADDVIRUS = pg.USEREVENT + 1
-pg.time.set_timer(ADDVIRUS, 2000)
+pg.time.set_timer(ADDVIRUS, 1000)
 
 running = True
 inmenu = True
@@ -303,4 +303,4 @@ while running:
 
     pg.display.flip()
     # FPS
-    clock.tick(30)
+    clock.tick(60)
