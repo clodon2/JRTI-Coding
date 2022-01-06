@@ -10,9 +10,25 @@ import random as rd
 from pygame.locals import *
 
 
+# from JrtiGameSupport, wouldn't recognize as an import for me
+def import_folder(path):
+    surface_list = []
+    for _, __, image_files in pg.walk(path):
+        for image in image_files:
+            full_path = path + "/" + image
+            image_surf = pg.image.load(full_path).convert_alpha()
+            surface_list.append(image_surf)
+
+    return surface_list
+
+
 class Virus(pg.sprite.Sprite):
     def __init__(self):
         super(Virus, self).__init__()
+        # explosion sprites from Felis Chaus, CC0 licence, https://opengameart.org/content/fire-explosion
+        self.explosionani = import_folder("Images/explosion/")
+        for s in self.explosionani:
+            pg.transform.scale(s, (200, 200))
         # Virus image I made myself
         virusimage = pg.transform.scale(pg.image.load("images/ViruswindowimageCorey.png").convert_alpha(), (170, 47))
         self.surf = virusimage
@@ -22,8 +38,16 @@ class Virus(pg.sprite.Sprite):
                     (rd.randint(5, 10)),
                     ))
         self.speed = rd.randint(2, 10)
+        self.dead = False
 
     def update(self):
+        explosionframecount = 0
+        if self.dead:
+            if explosionframecount > len(self.explosionani) - 1:
+                self.kill()
+            else:
+                self.surf = self.explosionani[explosionframecount]
+                explosionframecount += 1
         # moves virus and kills once it is past the taskbar image
         self.rect.move_ip(0, self.speed)
         if self.rect.top >= SCREEN_HEIGHT - 39:
@@ -300,7 +324,7 @@ while running:
             entity.kill()
     try:
         for i in hit:
-            virus_sprites.sprites()[i].kill()
+            virus_sprites.sprites()[i].dead = True
         hit = None
     except:
         pass
